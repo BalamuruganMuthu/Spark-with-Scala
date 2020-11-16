@@ -1,0 +1,321 @@
+Question 1:
+1. Create 2 val types with x as 100 & y as 10 respectively and find the Multiplication and division
+of both and store in some val as z and z1.
+============
+scala> val x=100
+x: Int = 100
+
+scala> x
+res0: Int = 100
+
+scala> print(x)
+100
+
+scala> val y=10
+y: Int = 10
+
+scala> val z=x*y
+z: Int = 1000
+
+scala> print(z)
+1000
+scala> val z1=x/y
+z1: Int = 10
+
+scala> y.getClass()
+res3: Class[Int] = int
+
+scala> z1.getClass()
+res4: Class[Int] = int
+
+Question 2:
+2. Create a as 2000 and find the division of a by y created in step 1 and reassign a with the divided
+result (200).
+============
+
+scala> var a=2000
+a: Int = 2000
+
+scala> a=a/y
+a: Int = 200
+
+scala> a
+res5: Int = 200
+
+scala> print(a)
+200
+scala> val a=2000
+a: Int = 2000
+
+Question 3:
+3. Create a val type with x:Int=100, then assign the x to val y, but the datatype of y has to be String.
+(think about using some function like toString)
+============
+
+scala> val x:Int=100
+x: Int = 100
+
+scala> x.getClass()
+res7: Class[Int] = int
+
+scala> val y:String = x.toString()
+y: String = 100
+
+scala> y.getClass()
+res8: Class[_ <: String] = class java.lang.String
+
+Question 4:
+4. Try only in REPL for now - Create a val type sc1 and assign sc into it and also try assigning sc1
+defined as AnyRef/Any and check the type of the sc1 using getClass function.
+============
+
+scala> val sc1=sc
+sc1: org.apache.spark.SparkContext = org.apache.spark.SparkContext@40dee07b
+
+scala> sc1.getClass()
+res9: Class[_ <: org.apache.spark.SparkContext] = class org.apache.spark.SparkContext
+
+scala> val sc1:AnyRef = sc
+sc1: AnyRef = org.apache.spark.SparkContext@40dee07b
+
+scala> sc1.getClass()
+res10: Class[_ <: AnyRef] = class org.apache.spark.SparkContext
+
+scala> val sc1:Any = sc
+sc1: Any = org.apache.spark.SparkContext@40dee07b
+
+scala> sc1.getClass()
+res11: Class[_] = class org.apache.spark.SparkContext
+
+Question 5:
+5. Create some var and val and prove static definition by re-assigning var with different data type
+and dynamic inference by displaying the data type respectively.
+============
+
+scala> var x=10
+x: Int = 10
+
+scala> x=10.20
+<console>:25: error: type mismatch;
+ found   : Double(10.2)
+ required: Int
+       x=10.20
+         ^
+
+scala> var x:Int=20
+x: Int = 20
+
+scala> x=30
+x: Int = 30
+
+scala> x.getClass()
+res12: Class[Int] = int
+
+scala> val x:String="Bala"
+x: String = Bala
+
+scala> print(x)
+Bala
+scala> x.getClass()
+res14: Class[_ <: String] = class java.lang.String
+
+scala> x="BigData"
+<console>:25: error: reassignment to val
+       x="BigData"
+
+Question 6:
+6. Write a program to find the greatest of 3 numbers
+============
+
+Option 1:
+----------
+object Demo{
+   def main(args:Array[String]){
+     var x=30;
+     val y=40;
+     var z=50;
+     if ((x>y) && (x>z)) {
+       print("x is greater")
+     } else if ((y>x) && (y>z)) {
+       print("y is greater")
+     } else {
+       print("z is greater")
+     }
+   }
+}
+
+Option 2:
+----------
+scala> var x=30
+x: Int = 30
+
+scala> var y=40
+y: Int = 40
+
+scala> var z=50
+z: Int = 50
+
+scala> if ((x>y) && (x>z)) 
+     | {
+     | print("x is greater")
+     | } else if ((y>x) && (y>z))
+     | {
+     | print("y is greater")
+     | } else
+     | print("z is greater")
+
+result:
+z is greater
+
+Option 3:
+----------
+
+scala> def highest(x:Int, y:Int, z:Int):String={
+     | if ((x>y) && (x>z)){
+     |   return "x is greater"
+     | } else if ((y>x) && (y>z)){
+     |   return "y is greater"
+     | } else 
+     |   return "z is greater"
+     | }
+highest: (x: Int, y: Int, z: Int)String
+
+scala> print(highest(10,4,6))
+x is greater
+scala> print(highest(10,40,6))
+y is greater
+scala> print(highest(10,40,60))
+z is greater
+
+Question 7:
+7. Write a nested if then else to print the course fees of if the student choose bigdata then check if
+bigdata then fees is 25000,
+if spark then fees is 15000, if the student chooses datascience then check if machinelearning then
+35000, if deep learning then 45000.
+============
+
+scala> def courseFees(course:String):Int={
+     |    if (course == "bigdata"){
+     |    Display all 587 possibilities? (y or n)
+     |     25000
+     |     } else if (course == "spark"){
+     |     Display all 587 possibilities? (y or n)
+     |      15000
+     |     } else if (course == "ML"){
+     |         return 35000
+     |     } else if (course == "DL"){
+     |        return 45000
+     |     } else
+     |        return 0
+     |    }
+courseFees: (course: String)Int
+
+scala> print("The course fees is : " + courseFees("bigdata"))
+The course fees is : 25000
+scala> print("The course fees is : " + courseFees("ML"))
+The course fees is : 35000
+scala> print("The course fees is : " + courseFees("DL"))
+The course fees is : 45000
+scala> print("The course fees is : " + courseFees("spark"))
+The course fees is : 15000
+
+Question 8:
+8. Check whether the given string is palindrome or not (try to use some function like reverse). For
+eg: val x="madam" then print as "palindrome" else "non palindrome".
+============
+
+scala> def palindrome(value:String):String={
+     |   if (value.reverse == value) 
+     |      return "Palindrome"
+     |   else
+     |      return "Non-Palindrome"
+     | }
+palindrome: (value: String)String
+
+scala> print(palindrome("madam"))
+Palindrome
+scala> print(palindrome("Inceptez"))
+Non-Palindrome
+
+
+Question 9:
+9. Check whether the val x=100 is an integer or string. (try to use some functions like toString,
+toUpperCase etc to execute this use case)
+============
+
+scala> var x=100
+x: Int = 100
+
+scala> var y=x.toString()
+y: String = 100
+
+scala> y.toUpperCase()
+res14: String = 100
+
+scala> val name="balamurugan"
+name: String = balamurugan
+
+scala> name.toUpperCase()
+res15: String = BALAMURUGAN
+
+scala> if (name.isInstanceOf[String]){
+     | print(name.toUpperCase())
+     | } else {
+     | print("Not a String")
+     | }
+BALAMURUGAN
+
+Question 10:
+10. Write a program using while or for loop to print even numbers and odd numbers between any
+range of data as per your intention and also find the even and
+odd values between 5 and 20 (even should be 6,8,10,12,14,16,18,20 and odd should be
+5,7,9,11,13,15,17,19).
+=============
+
+scala> for (i <- 5 to 20){
+     | if (i%2 == 0){
+     |   print(" " + i)
+     | }
+     | }
+ 6 8 10 12 14 16 18 20
+
+Question 11:
+11. For loop to increment from 0 till 21 with the of 3, result should be exactly 0,3,6,9,12,15,18. 
+=============
+
+scala> for (i <- 0 until 21 by 3){
+     | print(" " + i)
+     | }
+ 0 3 6 9 12 15 18
+
+
+Question 12:
+12. Write a for or while loop to print the cube of 4, result should be 4*4*4=64 
+(think using some var type initiated outside the loop)
+=============
+
+scala> def cube(n:Int):Int={
+     | return (n*n*n)
+     | }
+cube: (n: Int)Int
+
+scala> print(cube(4))
+64
+
+Question 13:
+13. Write for/while loop for printing only the values in range of 1 to 20 which are divisible by 4
+=============
+
+scala> def onlyFour(a:Int){
+     |    for (i <- 1 to a)
+     |    if (i % 4 == 0) {
+     |       print(i + " ")
+     |    }
+     | }
+onlyFour: (a: Int)Unit
+
+scala> onlyFour(21)
+4 8 12 16 20 
+
+
+ 
