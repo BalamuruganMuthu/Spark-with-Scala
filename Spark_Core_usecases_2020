@@ -1,0 +1,183 @@
+Complete the below exercise in REPL
+====================================
+1. create a hdfs filerdd from the file in a location /user/hduser/videolog/youtube_videos.tsv
+
+scala> val fileRdd = sc.textFile("hdfs://localhost:54310/user/hduser/videolog/youtube_videos.tsv")
+fileRdd: org.apache.spark.rdd.RDD[String] = hdfs://localhost:54310/user/hduser/videolog/youtube_videos.tsv MapPartitionsRDD[1] at textFile at <console>:24
+
+
+2. split the rows using tab ("\t") delimiter
+3. Remove the header record by filtering the first column value does not contains "id" into an rdd
+splitrdd
+
+scala> val splitRdd = fileRdd.map(x => x.split("\t")).filter(l => l(0) != "id")
+splitRdd: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[10] at filter at <console>:26
+
+scala> splitRdd.count
+res5: Long = 168286 
+
+*** The file contains 168286 records.
+
+4. display only first 10 rows in the screen from splitrdd.
+
+Option 1:
+---------
+scala> splitRdd.take(10)
+res20: Array[Array[String]] = Array(Array(uDNj-_5ty48, 267, 373, 274, 568, 320, 29.97, 0, h264, Music, http://r2---sn-ovgq0oxu-5goe.c.youtube.com/videoplayback?algorithm=throttle-factor&burst=40&ipbits=8&sparams=algorithm%2Cburst%2Ccp%2Cfactor%2Cid%2Cip%2Cipbits%2Citag%2Csource%2Cupn%2Cexpire&mv=m&source=youtube&ip=86.50.94.176&ms=au&fexp=931311%2C916903%2C916713%2C916612%2C919515%2C913818%2C923434%2C916914%2C929117%2C929121%2C929906%2C929907%2C929922%2C929127%2C929129%2C929131%2C929930%2C936403%2C925726%2C925720%2C925722%2C925718%2C929917%2C906945%2C929933%2C920302%2C906842%2C913428%2C920605%2C919811%2C913563%2C904830%2C919373%2C930803%2C904122%2C932211%2C938701%2C936308%2C909549%2C900816%2C912711%2C904494%2C904497%2C900375%2C906001&mt=1377888632&sver=3&itag=34&id=b83363fbfe6dcb8f&cp=U...
+
+Option 2:
+---------
+scala> top10.map(x => (x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8),x(9))).take(10)
+res19: Array[(String, String, String, String, String, String, String, String, String, String)] = Array((uDNj-_5ty48,267,373,274,568,320,29.97,0,h264,Music), (uDNj-_5ty48,267,512,396,480,270,29.97,29.97,h264,Music), (uDNj-_5ty48,267,324,263,400,226,29.97,29.97,flv1,Music), (uDNj-_5ty48,267,85,55,176,144,12,12,mpeg4,Music), (WCgt-AactyY,31,1261,1183,640,480,24,0,h264,People & Blogs), (WCgt-AactyY,31,1166,1183,640,480,24,0,vp8,People & Blogs), (WCgt-AactyY,31,736,646,480,360,24,0,h264,People & Blogs), (WCgt-AactyY,31,715,641,480,360,24,24,h264,People & Blogs), (WCgt-AactyY,31,762,641,480,360,24,24,vp8,People & Blogs), (WCgt-AactyY,31,370,305,320,240,24,24,flv1,People & Blogs))
+
+
+
+5. filter only Music category data from splitrdd into an rdd called music
+
+scala> val music=splitRdd.filter(l => l(9).toUpperCase == "MUSIC")
+music: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[14] at filter at <console>:28
+
+
+scala> music.count
+res26: Long = 26512
+
+*** There are 26512 records belong to music.
+
+6. filter only duration>100 data from splitrdd into an rdd called longdur
+
+scala> val longdur = splitRdd.filter(l => l(1).toInt > 100)
+longdur: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[12] at filter at <console>:28
+
+scala> longdur.count
+res27: Long = 101033
+
+*** There are 101033 records, for which the duration is greater than 100.
+
+scala> longdur.take(1)
+res22: Array[Array[String]] = Array(Array(uDNj-_5ty48, 267, 373, 274, 568, 320, 29.97, 0, h264, Music, http://r2---sn-ovgq0oxu-5goe.c.youtube.com/videoplayback?algorithm=throttle-factor&burst=40&ipbits=8&sparams=algorithm%2Cburst%2Ccp%2Cfactor%2Cid%2Cip%2Cipbits%2Citag%2Csource%2Cupn%2Cexpire&mv=m&source=youtube&ip=86.50.94.176&ms=au&fexp=931311%2C916903%2C916713%2C916612%2C919515%2C913818%2C923434%2C916914%2C929117%2C929121%2C929906%2C929907%2C929922%2C929127%2C929129%2C929131%2C929930%2C936403%2C925726%2C925720%2C925722%2C925718%2C929917%2C906945%2C929933%2C920302%2C906842%2C913428%2C920605%2C919811%2C913563%2C904830%2C919373%2C930803%2C904122%2C932211%2C938701%2C936308%2C909549%2C900816%2C912711%2C904494%2C904497%2C900375%2C906001&mt=1377888632&sver=3&itag=34&id=b83363fbfe6dcb8f&cp=U...
+
+scala> longdur.map(x => (x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8),x(9))).take(10)
+res23: Array[(String, String, String, String, String, String, String, String, String, String)] = Array((uDNj-_5ty48,267,373,274,568,320,29.97,0,h264,Music), (uDNj-_5ty48,267,512,396,480,270,29.97,29.97,h264,Music), (uDNj-_5ty48,267,324,263,400,226,29.97,29.97,flv1,Music), (uDNj-_5ty48,267,85,55,176,144,12,12,mpeg4,Music), (h9Kt-GhvVlg,333,727,638,384,288,25,0,h264,People & Blogs), (h9Kt-GhvVlg,333,668,567,384,288,25,25,h264,People & Blogs), (h9Kt-GhvVlg,333,306,246,320,240,25,25,flv1,People & Blogs), (h9Kt-GhvVlg,333,91,54,176,144,12,12,mpeg4,People & Blogs), (dtMj-hglvaI,1000,2862,2703,1280,720,29.97,29.97,h264,Sports), (dtMj-hglvaI,1000,2774,2703,1280,720,29.97,29.97,vp8,Sports))
+
+7. Union music and longdur rdd and find only distinct records into an rdd music_longdur
+
+scala> val longdur1 = longdur.map(x => (x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8),x(9),x(10)))
+longdur1: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[28] at map at <console>:30
+
+scala> val music1 = music.map(x => (x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8),x(9),x(10)))
+longdur1: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[28] at map at <console>:30
+
+
+scala> val music_longdur = music1.union(longdur1).distinct
+music_longdur: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[33] at distinct at <console>:36
+
+
+scala> music_longdur.count
+res38: Long = 105906
+
+8. Select only id, duration, codec and category by re ordering the fields like
+id,category,codec,duration into an rdd mapcolsrdd
+
+scala> val mapcolsrdd = splitRdd.map(x => (x(0), x(9), x(8), x(1)))
+mapcolsrdd: org.apache.spark.rdd.RDD[(String, String, String, String)] = MapPartitionsRDD[35] at map at <console>:28
+
+scala> mapcolsrdd.take(3)
+res42: Array[(String, String, String, String)] = Array((uDNj-_5ty48,Music,h264,267), (uDNj-_5ty48,Music,h264,267), (uDNj-_5ty48,Music,flv1,267))
+
+
+9. Select only duration from mapcolsrdd and find max duration by using max fuction.
+
+scala> mapcolsrdd.map(x => x._4).max
+res54: String = 999
+
+10. Select only codec from mapcolsrdd, convert to upper case and print distinct of it in the screen.
+
+scala> mapcolsrdd.map(x => x._3.toUpperCase).distinct.collect
+res57: Array[String] = Array(NONE, H264, VP8, MPEG4, FLV1)  
+
+11. Create an rdd called filerdd4part from filerdd created in step1 by increasing the number of
+partitions to 4 (Execute this step anywhere in the code where ever appropriate)
+
+scala> val filerdd4part=fileRdd.repartition(4)
+filerdd4part: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[56] at repartition at <console>:26
+
+scala> fileRdd.partitions.size
+res59: Int = 2
+
+scala> fileRdd.getNumPartitions
+res60: Int = 2
+
+scala> filerdd4part.partitions.size
+res61: Int = 4
+
+scala> filerdd4part.getNumPartitions
+res62: Int = 4
+
+12. Persist the filerdd4part data into memory and disk with replica of 2, (Execute this step anywhere
+in the code where ever appropriate)
+
+
+
+13. Calculate and print the overall total, max, min duration for Comedy category
+
+scala> val comedyRdd = splitRdd.map(x => (x(1), x(9))).filter(l => l._2.toUpperCase == "COMEDY")
+comedyRdd: org.apache.spark.rdd.RDD[(String, String)] = MapPartitionsRDD[65] at filter at <console>:28
+
+scala> comedyRdd.map(x => x._1.toInt).max
+res77: Int = 7084                                                               
+
+scala> comedyRdd.map(x => x._1.toInt).min
+res78: Int = 2                                                                  
+
+scala> comedyRdd.map(x => x._1.toInt).sum
+res79: Double = 1519049.0 
+
+14. Print the codec wise count and minimum duration not by using min function.
+
+scala> splitRdd.map(x => (x(8),1)).countByKey
+res84: scala.collection.Map[String,Long] = Map(mpeg4 -> 25264, h264 -> 74996, vp8 -> 42687, none -> 2, flv1 -> 25337)
+
+15. Print the distinct category of videos
+
+scala> splitRdd.map(x => (x(9))).distinct.collect
+res94: Array[String] = Array(Film & Animation, News & Politics, Entertainment, Shows, Howto & Style, Education, People & Blogs, Science & Technology, Music, Travel & Events, Nonprofits & Activis, Autos & Vehicles, Comedy, Sports, Pets & Animals, Gaming)
+
+
+16. Print only the id, duration, height and width sorted by duration.
+
+scala> splitRdd.map(x => duration(x(0), x(1).toLong, x(4).toLong, x(5).toLong)).coalesce(1).sortBy(t => t.duration, true).collect
+
+res105: Array[duration] = Array(duration(mr9y-OljTv0,1,1920,1080), duration(mr9y-OljTv0,1,1920,1080), duration(mr9y-OljTv0,1,1280,720), duration(mr9y-OljTv0,1,1280,720), duration(mr9y-OljTv0,1,854,480), duration(mr9y-OljTv0,1,854,480), duration(mr9y-OljTv0,1,640,360), duration(mr9y-OljTv0,1,640,360), duration(mr9y-OljTv0,1,640,360), duration(mr9y-OljTv0,1,426,240), duration(SfEw-1_79yg,1,320,240), duration(SfEw-1_79yg,1,320,240), duration(SfEw-1_79yg,1,320,240), duration(SfEw-1_79yg,1,320,240), duration(SfEw-1_79yg,1,176,144), duration(QANU-NU0hzQ,1,320,240), duration(QANU-NU0hzQ,1,320,240), duration(QANU-NU0hzQ,1,320,240), duration(QANU-NU0hzQ,1,320,240), duration(7plH-Pr0EME,1,320,240), duration(7plH-Pr0EME,1,320,240), duration(7plH-Pr0EME,1,320,240), duration(UzVf-7f0E_0,1,640,480), ...
+
+
+scala> val music_longdur = music1.union(longdur1).distinct
+music_longdur: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[33] at distinct at <console>:36
+
+17. Merge the rdds generated in step5 and step13.
+
+scala> val comedyRdd1 = splitRdd.map(x => (x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8),x(9),x(10))).filter(l => l._10.toUpperCase == "COMEDY")
+
+scala> val music_comedy = music1.union(comedyRdd1)
+music_comedy: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = UnionRDD[152] at union at <console>:34
+
+scala> sc.setCheckpointDir("hdfs://localhost:54310/tmp/ckptdir")
+
+scala> val music_comedy = music1.union(comedyRdd1)
+music_comedy: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String, String, String)] = UnionRDD[153] at union at <console>:34
+
+
+scala> music_comedy.checkpoint
+
+scala> music_comedy.count
+res116: Long = 36384  
+
+[hduser@Inceptez videolog]$ hdfs dfs -ls /tmp/ckptdir/d5d47715-8ab6-414b-8568-e9dc37ce12f4/rdd-153
+20/12/20 20:46:41 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 4 items
+-rw-r--r--   1 hduser supergroup   11953606 2020-12-20 20:43 /tmp/ckptdir/d5d47715-8ab6-414b-8568-e9dc37ce12f4/rdd-153/part-00000
+-rw-r--r--   1 hduser supergroup   12230624 2020-12-20 20:43 /tmp/ckptdir/d5d47715-8ab6-414b-8568-e9dc37ce12f4/rdd-153/part-00001
+-rw-r--r--   1 hduser supergroup    4621098 2020-12-20 20:43 /tmp/ckptdir/d5d47715-8ab6-414b-8568-e9dc37ce12f4/rdd-153/part-00002
+-rw-r--r--   1 hduser supergroup    4378749 2020-12-20 20:43 /tmp/ckptdir/d5d47715-8ab6-414b-8568-e9dc37ce12f4/rdd-153/part-00003
+
+
+
